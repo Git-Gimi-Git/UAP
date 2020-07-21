@@ -1,0 +1,12 @@
+python my_UAP.py \
+--X_images_path './X_images.npy' \
+--Y_images_path './Y_images.npy' \
+--X_materials_dir './X_materials' \
+--model_path './model/VGG16.h5' \
+--model_type 'VGG16' \
+--norm_type 'inf' \
+--norm_rate 0.04 \
+--fgsm_eps 0.001 \
+--uap_iter 1 \
+--targeted -1 \
+--save_path './results'
