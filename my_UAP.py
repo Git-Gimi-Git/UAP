@@ -176,9 +176,9 @@ class my_UAP:
         num_m = len(self.X_materials_paths)
         imshape = self.X_images[0].shape
         
-        print("\n Generating UAP ...")
+        #print("\n Generating UAP ...")
         if self.targeted > 0:
-            print("\n *** targeted attack *** ")
+            print(" *** targeted attack *** \n")
             adv_crafter = UniversalPerturbation(
                 self.classifier,
                 attacker='fgsm',
@@ -188,7 +188,7 @@ class my_UAP:
                 eps=self.norm_size,
                 norm=self.norm_type)
         else:
-            print("\n *** non-targeted attack *** ")
+            print(" *** non-targeted attack *** \n")
             adv_crafter = UniversalPerturbation(
                 self.classifier,
                 attacker='fgsm',
@@ -270,16 +270,16 @@ class my_DNN:
     def my_classifier(self):
         if self.mono==1:
             if self.model_type == 'InceptionV3':
-                print("\n MODEL : InceptionV3 \n")
+                print(" MODEL: InceptionV3")
                 base_model = InceptionV3(weights='imagenet', include_top=False)
             elif self.model_type == 'VGG16':
-                print("\n MODEL : VGG16 \n")
+                print(" MODEL: VGG16")
                 base_model = VGG16(weights='imagenet', include_top=False)
             elif self.model_type == "ResNet50":
-                print("\n MODEL : ResNet50 \n")
+                print(" MODEL: ResNet50")
                 base_model = ResNet50(weights='imagenet', include_top=False)
             else:
-                print("\n ERROR : UNKNOWN MODEL TYPE \n")
+                print(" --- ERROR : UNKNOWN MODEL TYPE --- ")
             base_model.layers.pop(0) # remove input layer
             newInput = Input(batch_shape=(None, 299,299,1))
             x = Lambda(lambda image: tf.image.grayscale_to_rgb(image))(newInput)
@@ -293,16 +293,16 @@ class my_DNN:
 
         else:
             if self.model_type == 'InceptionV3':
-                print("base_model = InceptionV3\n")
+                print(" MODEL: InceptionV3")
                 base_model = InceptionV3(weights='imagenet', include_top=False)
             elif self.model_type == 'VGG16':
-                print("base_model = VGG16\n")
+                print(" MODEL: VGG16")
                 base_model = VGG16(weights='imagenet', include_top=False)
             elif self.model_type == "ResNet50":
-                print("base_model = ResNet50\n")
+                print(" MODEL: ResNet50")
                 base_model = ResNet50(weights='imagenet', include_top=False)
             else:
-                print("\n ERROR : UNKNOWN MODEL TYPE \n")
+                print(" --- ERROR: UNKNOWN MODEL TYPE --- ")
             x = base_model.output
             x = GlobalAveragePooling2D()(x)
             predictions = Dense(self.output_class, activation='softmax')(x)
@@ -343,10 +343,10 @@ if __name__ == '__main__':
     norm_rate = args.norm_rate
 
     # load data
-    print("\n loading Images ...")
+    #print("\n loading Images ...")
     X_images = np.load(args.X_images_path)
     Y_images = np.load(args.Y_images_path)
-    print("\n done!")
+    #print("\n done!")
 
     # 指定したディレクトリから、X_materialsのファイルリストを読み込み
     X_materials_paths = glob.glob(args.X_materials_dir + '/*')
@@ -364,14 +364,16 @@ if __name__ == '__main__':
             norm_mean += abs(img).max()
         norm_mean = norm_mean/X_images.shape[0]
         norm_size = float(norm_rate*norm_mean/128.0)
-        print("\n Linf norm : {:.2f} ".format(norm_size))   
+        print("\n ------------------------------------")
+        print(" Linf norm: {:.2f} ".format(norm_size))   
     else:
         norm_mean = 0
         for img in X_images:
             norm_mean += np.linalg.norm(img)
         norm_mean = norm_mean/X_images.shape[0]
         norm_size = float(norm_rate*norm_mean/128.0)
-        print("\n L2 norm : {:.2f} ".format(norm_size))
+        print(" L2 norm: {:.2f} ".format(norm_size))   
+
 
     # -1 ~ +1 正規化
     X_images -= 128.0
@@ -389,7 +391,8 @@ if __name__ == '__main__':
     # classifierのaccuracyを確認
     preds = np.argmax(classifier.predict(X_images), axis=1)
     acc = np.sum(preds == np.argmax(Y_images, axis=1)) / Y_images.shape[0]
-    print("\naccuracy : {:.2f}".format(acc))
+    print(" Accuracy : {:.2f}".format(acc))
+    print(" ------------------------------------\n")
 
     # UAPの生成
     uap = my_UAP(
