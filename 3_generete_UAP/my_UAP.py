@@ -205,8 +205,8 @@ class my_UAP:
         for i,path in enumerate(self.X_materials_paths):
             X_materials = np.load(path)
             X_materials_cnt += X_materials.shape[0]
-            if X_materials.shape[-1] != 3:
-                X_materials = self.my_gray_scale(images=X_materials)
+            #if X_materials.shape[-1] != 3:
+                #X_materials = self.my_gray_scale(images=X_materials)
             X_materials -= 128.0 # -1~+1正規化
             X_materials /= 128.0 
 
